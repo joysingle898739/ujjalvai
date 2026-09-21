@@ -23,10 +23,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
 
       - name: Install Node Dependencies
-        run: npm ci || npm install
+        run: npm install
 
       - name: Build Web Assets
         run: npm run build
@@ -54,13 +53,14 @@ jobs:
       - name: Prepare APK for Release
         run: |
           mkdir -p release-apk
+          cp android/app/build/outputs/apk/debug/app-debug.apk release-apk/app-debug.apk
           cp android/app/build/outputs/apk/debug/app-debug.apk release-apk/UzzalBhaiShop-debug.apk
 
       - name: Upload Debug APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: UzzalBhaiShop-debug-apk
-          path: release-apk/UzzalBhaiShop-debug.apk
+          name: app-debug-apk
+          path: release-apk/app-debug.apk
           retention-days: 30
 
       - name: Create or Update GitHub Release
@@ -73,9 +73,11 @@ jobs:
             ### 📱 উজ্জ্বল ভাইয়ের দোকান - অ্যান্ড্রয়েড অ্যাপ (Debug APK)
             - **বিল্ড নম্বর:** #${{ github.run_number }}
             - **কমিট:** ${{ github.sha }}
-            - **সরাসরি ডাউনলোড:** নিচে থাকা `UzzalBhaiShop-debug.apk` ফাইলটিতে ক্লিক করে সরাসরি ফোনে ডাউনলোড ও ইনস্টল করুন।
+            - **সরাসরি ডাউনলোড:** নিচে থাকা `app-debug.apk` বা `UzzalBhaiShop-debug.apk` ফাইলটিতে ক্লিক করে সরাসরি ফোনে ডাউনলোড ও ইনস্টল করুন।
           draft: false
           prerelease: false
-          files: release-apk/UzzalBhaiShop-debug.apk
+          files: |
+            release-apk/app-debug.apk
+            release-apk/UzzalBhaiShop-debug.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
